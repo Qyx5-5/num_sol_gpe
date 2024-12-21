@@ -1,0 +1,51 @@
+{
+    "simulation": {
+        "dimension": 2,
+        "dt": 0.001,
+        "T": 10,
+        "Nt": 10000,
+        "save_every": 100,
+        "mode": "evolution"
+    },
+    "grid": {
+        "Nx": 256,
+        "Ny": 256,
+        "Nz": 1,
+        "Lx": 10,
+        "Ly": 10,
+        "Lz": 1
+    },
+    "parameters": {
+        "epsilon": 0.01,
+        "kappa": 1,
+        "gamma_y": 1,
+        "gamma_z": 1
+    },
+    "potential": {
+        "type": "optical_lattice",
+        "parameters": {
+            "V0": 5.0,
+            "kL": 1.0,
+            "gamma_y": 1.5,
+            "gamma_z": 2.0,
+            "use_harmonic": true
+        }
+    },
+    "initial_condition": {
+        "type": "gaussian",
+        "parameters": {
+            "sigma_x": 1,
+            "sigma_y": 1
+        }
+    },
+    "ground_state": {
+        "method": "imaginary_time",
+        "dt_imag": 0.01,
+        "tolerance": 1e-8
+    },
+    "visualization": {
+        "plot_density": true,
+        "plot_widths": true,
+        "animate": true
+    }
+} 
