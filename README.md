@@ -157,9 +157,100 @@ The package includes functions for:
 - Real-time animation
 - Energy evolution (optional)
 
-## Examples
+## Step-by-Step Guide
 
-### 1. 2D Harmonic Trap
+### 1. Basic Setup
+1. Install MATLAB (R2019b or later)
+2. Clone the repository:
+```bash
+git clone https://github.com/yourusername/gpe-tssp-solver.git
+cd gpe-tssp-solver
+```
+
+### 2. Configure Your Simulation
+
+1. Navigate to `config/default_config.json`
+2. Set basic parameters:
+```json
+{
+    "simulation": {
+        "dimension": 2,          // Choose 1, 2, or 3
+        "mode": "evolution",     // or "ground_state"
+        "dt": 0.001,            // Time step
+        "T": 10                 // Total time
+    }
+}
+```
+
+3. Choose your potential (e.g., harmonic trap):
+```json
+{
+    "potential": {
+        "type": "harmonic",
+        "parameters": {
+            "gamma_y": 1.0,
+            "gamma_z": 1.0
+        }
+    }
+}
+```
+
+4. Set initial condition (e.g., Gaussian):
+```json
+{
+    "initial_condition": {
+        "type": "gaussian",
+        "parameters": {
+            "sigma_x": 1.0,
+            "sigma_y": 1.0
+        }
+    }
+}
+```
+
+### 3. Run Simulation
+
+1. Open MATLAB
+2. Navigate to project directory
+3. Run the main script:
+```matlab
+>> main
+```
+
+### 4. Understanding Results
+
+The simulation produces several visualizations:
+
+1. **Density Plots**
+   - 1D: Line plot of |ψ|²
+   - 2D: Surface plot with cross-sections
+   - 3D: Isosurfaces and slices
+
+2. **Width Evolution**
+   - Shows condensate size over time
+   - Different lines for each dimension
+
+3. **Animation** (if enabled)
+   - Real-time density evolution
+   - Can be saved as video
+
+### 5. Common Configurations
+
+1. **Ground State Calculation**:
+```json
+{
+    "simulation": {
+        "mode": "ground_state",
+        "dimension": 1
+    },
+    "ground_state": {
+        "method": "imaginary_time",
+        "tolerance": 1e-8
+    }
+}
+```
+
+2. **2D Optical Lattice**:
 ```json
 {
     "simulation": {
@@ -167,44 +258,60 @@ The package includes functions for:
         "mode": "evolution"
     },
     "potential": {
-        "type": "harmonic",
+        "type": "optical_lattice",
         "parameters": {
-            "gamma_y": 1.0
+            "V0": 5.0,
+            "kL": 1.0
         }
     }
 }
 ```
 
-### 2. 1D Double Well Ground State
+### 6. Visualization Options
+
+Control output through visualization settings:
 ```json
 {
-    "simulation": {
-        "dimension": 1,
-        "mode": "ground_state"
-    },
-    "potential": {
-        "type": "double_well",
-        "parameters": {
-            "barrier_height": 2.0,
-            "well_separation": 3.0
-        }
+    "visualization": {
+        "plot_density": true,
+        "plot_widths": true,
+        "animate": true,
+        "save_video": false,
+        "frame_rate": 20
     }
 }
 ```
 
-## Numerical Considerations
+### 7. Tips for Good Results
 
 1. **Grid Resolution**
-   - Use `dx ≈ O(ε)` for defocusing case
-   - Finer grid needed for focusing case or strong interactions
+   - Start with Nx = Ny = 128
+   - Increase if solution shows artifacts
 
 2. **Time Step**
-   - Use `dt ≈ O(ε)` for defocusing case
-   - Smaller time steps needed for focusing case
+   - Start with dt = 0.001
+   - Decrease if simulation becomes unstable
 
 3. **Domain Size**
-   - Choose `Lx`, `Ly`, `Lz` large enough to contain the condensate
-   - Periodic boundary conditions are assumed
+   - Choose Lx, Ly ≈ 5-10 times the condensate size
+   - Adjust based on potential type
+
+### 8. Troubleshooting
+
+1. **Unstable Evolution**
+   - Decrease time step
+   - Increase grid points
+   - Check normalization
+
+2. **Slow Performance**
+   - Reduce grid points
+   - Increase save_every
+   - Disable animation
+
+3. **Memory Issues**
+   - Reduce simulation time
+   - Save fewer snapshots
+   - Use 2D instead of 3D
 
 ## Contributing
 

@@ -1,139 +1,163 @@
-# Utility Functions Documentation
+# Visualization Modules
 
-This directory contains essential utility functions for the GPE-TSSP solver. These functions handle core calculations, normalization, and configuration management.
+This directory contains functions for visualizing BEC simulation results in 1D, 2D, and 3D.
 
-## Core Utilities
+## Core Visualization Functions
 
-### 1. calculate_condensate_widths.m
+### 1. Density Plots
 
-Calculates the RMS widths of the condensate in each dimension.
+#### `plot_density_1d.m`
+Visualizes 1D condensate density:
+- Final density distribution
+- Time evolution density map
+````
 
-#### Mathematical Background:
-For dimension d, the width σ is calculated as:
-```math
-x_{mean} = ∫ x |ψ|² dx / ∫ |ψ|² dx
-σ = √(∫ (x - x_{mean})² |ψ|² dx / ∫ |ψ|² dx)
-```
-
-#### Implementation Details:
 ```matlab
-% 1D case
-x_mean = sum(x .* rho) * dx / (sum(rho) * dx);
-sigma_x = sqrt(sum((x - x_mean).^2 .* rho) * dx / (sum(rho) * dx));
-
-% 2D/3D cases use meshgrid for coordinate arrays
+plot_density_1d(x, psi, results, config);
 ```
 
-### 2. calculate_energy.m
+#### `plot_density_2d.m`
+2D density visualization with:
+- Surface plot of final density
+- Cross-sectional plots
+- Optional animation
+````
 
-Computes the total energy of the system, including kinetic, potential, and interaction terms.
-
-#### Energy Components:
-1. **Kinetic Energy**: `E_kin = (ε/2) ∫ |∇ψ|² dx`
-2. **Potential Energy**: `E_pot = ∫ V|ψ|² dx`
-3. **Interaction Energy**: `E_int = (κ_d/2) ∫ |ψ|⁴ dx`
-
-#### Implementation Notes:
-- Uses FFT for kinetic energy calculation
-- Handles 1D, 2D, and 3D cases efficiently
-- Returns real part of total energy
-
-### 3. calculate_kappa_d.m
-
-Computes the dimension-dependent interaction parameter κ_d.
-
-#### Formulas:
 ```matlab
-case 1: kappa_d = kappa
-case 2: kappa_d = kappa * sqrt(gamma_y) / (2 * pi * epsilon)
-case 3: kappa_d = kappa * sqrt(gamma_y * gamma_z) / (4 * pi * epsilon^2)
+plot_density_2d(x, y, psi, results, config);
 ```
 
-### 4. normalize_wavefunction.m
+#### `plot_density_3d.m`
+3D visualization features:
+- Isosurface plots
+- Density slices
+- Cross-sections
+````
 
-Ensures the wave function satisfies the normalization condition: ∫|ψ|² dx = 1
+### 2. Animation (`animate_simulation.m`)
 
-#### Key Features:
-- Dimension-aware normalization
-- Preserves wave function phase
-- Handles different grid spacings
-
-## Configuration Management
-
-### load_config.m
-
-Manages simulation configuration with robust default values.
-
-#### Default Parameters:
-```json
-{
-    "simulation": {
-        "dimension": 2,
-        "dt": 0.001,
-        "T": 10
-    },
-    "grid": {
-        "Nx": 128,
-        "Ny": 128,
-        "Nz": 1
-    },
-    "parameters": {
-        "epsilon": 0.01,
-        "kappa": 1
-    }
-}
-```
+Creates dynamic visualizations of time evolution:
 
 #### Features:
-- JSON configuration file support
-- Comprehensive default values
-- Parameter validation
-- Backwards compatibility
+- Dimension-specific animations (1D, 2D, 3D)
+- Video saving capability
+- Progress display
+
+#### Usage:
+````
+
+```matlab
+% Enable animation in config
+config.visualization.animate = true;
+config.visualization.save_video = true;  % Optional
+
+% Call animation
+animate_simulation(x, y, z, results, config);
+```
+
+### 3. Width Evolution (`plot_condensate_widths.m`)
+
+Tracks condensate size over time:
+- σx, σy, σz evolution
+- Multi-dimensional support
+- Automatic dimension detection
+
+## Configuration Options
+
+````
+
+{
+    "visualization": {
+        "plot_density": true,      // Enable density plots
+        "plot_widths": true,       // Enable width evolution plots
+        "animate": true,           // Enable animation
+        "save_video": false,       // Save animation to file
+        "frame_rate": 20,          // Video frame rate
+        "colormap": "jet"          // Plot colormap
+    }
+}
+````
+
+## Common Features
+
+1. **Automatic Dimensionality**:
+   - Adapts to 1D/2D/3D data
+   - Appropriate plot types
+   - Relevant cross-sections
+
+2. **Interactive Elements**:
+   - Rotatable 3D plots
+   - Adjustable view angles
+   - Colorbar scaling
+
+3. **Export Options**:
+   - Video saving (.avi)
+   - Figure export
+   - Data extraction
 
 ## Usage Examples
 
-### 1. Energy Calculation
+### 1. Basic Density Plot
+````
+
 ```matlab
-% Calculate total energy
-E = calculate_energy(psi, V, kx, ky, kz, dx, dy, dz, params, config);
-fprintf('Total Energy: %.6f\n', E);
+% 1D plot
+plot_density_1d(x, psi, results, config);
+
+% 2D plot
+plot_density_2d(x, y, psi, results, config);
+
+% 3D plot
+plot_density_3d(x, y, z, psi, results, config);
 ```
 
-### 2. Width Calculation
+### 2. Animated Evolution
+````
+
 ```matlab
-% Calculate and plot condensate widths
-[sigma_x, sigma_y, sigma_z] = calculate_condensate_widths(psi, x, y, z, dx, dy, dz, dimension);
+% Configure animation
+config.visualization.animate = true;
+config.visualization.save_video = true;
+
+% Run animation
+animate_simulation(x, y, z, results, config);
+```
+
+### 3. Width Analysis
+````
+
+```matlab
+% Plot width evolution
 plot_condensate_widths(results, config);
 ```
 
-### 3. Configuration Loading
-```matlab
-% Load and validate configuration
-config = load_config('config/default_config.json');
-```
+## Performance Tips
 
-## Error Handling
+1. **Memory Management**:
+   - Use `drawnow` sparingly
+   - Clear figures in loops
+   - Manage video frame storage
 
-All utility functions include:
-- Input validation
-- Dimension checking
-- Informative error messages
-- NaN/Inf checking
+2. **Speed Optimization**:
+   - Adjust frame rates
+   - Control animation quality
+   - Use appropriate plot types
 
-## Performance Considerations
-
-1. **Memory Efficiency**:
-   - Avoid unnecessary array copies
-   - Use in-place operations where possible
-   - Handle large arrays efficiently
-
-2. **Computational Optimization**:
-   - Vectorized operations
-   - Efficient FFT usage
-   - Minimal loop usage
+3. **Large Dataset Handling**:
+   - Downsample for animation
+   - Use efficient plot updates
+   - Clear unused variables
 
 ## Dependencies
 
-- MATLAB's core functions
-- Signal Processing Toolbox (for FFT)
-- JSON parser (for configuration)
+- MATLAB Graphics
+- Image Processing Toolbox (optional)
+- VideoWriter for animations
+
+## Error Handling
+
+Each visualization function includes:
+- Input validation
+- Dimension checking
+- Missing data warnings
+- Graceful fallbacks
