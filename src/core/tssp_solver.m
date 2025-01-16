@@ -27,6 +27,7 @@ results.density = cell(1, ceil(Nt/save_every));
 results.sigma_x = zeros(1, ceil(Nt/save_every));
 results.sigma_y = zeros(1, ceil(Nt/save_every));
 results.sigma_z = zeros(1, ceil(Nt/save_every));
+results.energy = zeros(1, ceil(Nt/save_every));
 
 % Check if dimensions of psi and V match
 if ~isequal(size(psi), size(V))
@@ -51,13 +52,15 @@ for n = 1:Nt
         % Calculate density
         rho = abs(psi).^2;
         
-        % Calculate condensate widths (if requested)
-        if config.visualization.plot_widths
+        % Calculate condensate widths and energy if requested
+        if isfield(config.visualization, 'calculate_observables') && config.visualization.calculate_observables
             [sigma_x, sigma_y, sigma_z] = calculate_condensate_widths(psi, x, y, z, dx, dy, dz, dimension);
+            energy = calculate_energy(psi, V, kx, ky, kz, dx, dy, dz, params, config);
         else
             sigma_x = NaN;
             sigma_y = NaN;
             sigma_z = NaN;
+            energy = NaN;
         end
         
         % Store results
@@ -67,6 +70,7 @@ for n = 1:Nt
         results.sigma_x(idx) = sigma_x;
         results.sigma_y(idx) = sigma_y;
         results.sigma_z(idx) = sigma_z;
+        results.energy(idx) = energy;
         
         % Display progress
         fprintf('Time step: %d/%d (t = %f)\n', n, Nt, n * dt);
