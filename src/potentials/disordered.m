@@ -23,7 +23,16 @@ V0 = params.V0;
 lc = params.correlation_length;
 include_harmonic = isfield(params, 'include_harmonic') && params.include_harmonic;
 
-if isempty(y) && isempty(z) % 1D
+% Determine dimensionality based on non-singleton dimensions
+dim = 1;
+if ~isempty(y) && length(y) > 1
+    dim = 2;
+end
+if ~isempty(z) && length(z) > 1
+    dim = 3;
+end
+
+if dim == 1 % 1D
     Nx = length(x);
     % Generate random potential with correlation length lc
     xi = randn(1, Nx);
@@ -35,7 +44,7 @@ if isempty(y) && isempty(z) % 1D
         V = V + 0.5 * x.^2;
     end
 
-elseif isempty(z) % 2D
+elseif dim == 2 % 2D
     [X, Y] = meshgrid(x, y);
     Nx = length(x);
     Ny = length(y);

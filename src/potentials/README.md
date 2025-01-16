@@ -120,7 +120,6 @@ V = potential(x, y, z, params);
     }
 }
 ```
-
 ## Implementation Notes
 
 ### 1. Coordinate Systems
@@ -157,3 +156,4 @@ V = potential(x, y, z, params);
    - Ensure potential matches boundary conditions
    - Check normalization with strong potentials
    - Monitor energy conservation
+

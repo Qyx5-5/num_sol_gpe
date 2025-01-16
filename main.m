@@ -45,7 +45,7 @@ try
     end
     
     if config.visualization.animate
-        animate_simulation(results, config);
+        animate_simulation(x, y, z, results, config);
     end
     
     % Remove paths to source code directories
