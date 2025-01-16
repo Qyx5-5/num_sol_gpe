@@ -151,11 +151,54 @@ Two methods are available:
 
 ### Visualization
 
-The package includes functions for:
-- Density plots (1D, 2D, 3D)
-- Condensate width evolution
-- Real-time animation
-- Energy evolution (optional)
+The package includes an interactive visualization dashboard with:
+
+1. **Interactive Controls**
+   - Play/Pause buttons
+   - Time navigation slider
+   - Automatic cleanup
+
+2. **Multi-panel Display**
+   - Main density plot (adapts to 1D/2D/3D)
+   - Cross-section view
+   - Condensate width evolution
+   - Energy evolution
+
+3. **Advanced Features**
+   - Multiple isosurface levels in 3D
+   - Real-time updates
+   - Video export
+   - Resource cleanup
+
+Configure visualization through:
+```json
+{
+    "visualization": {
+        "plot_density": false,      // Separate density plots
+        "plot_widths": false,       // Separate width plots
+        "animate": true,            // Enable interactive dashboard
+        "save_video": false,        // Save animation to file
+        "calculate_observables": true, // Track widths and energy
+    }
+}
+```
+
+### Performance Optimization
+
+1. **Memory Efficiency**
+   - Frame-by-frame video saving
+   - Efficient plot updates
+   - Proper resource cleanup
+
+2. **Speed**
+   - Rate-limited display updates
+   - Optimized animation loop
+   - Synchronized multi-panel updates
+
+3. **Large Simulations**
+   - Increase `save_every` in config
+   - Adjust `frame_rate` for smoother playback
+   - Use `calculate_observables` selectively
 
 ## Step-by-Step Guide
 

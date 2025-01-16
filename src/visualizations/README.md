@@ -10,8 +10,6 @@ This directory contains functions for visualizing BEC simulation results in 1D, 
 Visualizes 1D condensate density:
 - Final density distribution
 - Time evolution density map
-````
-
 ```matlab
 plot_density_1d(x, psi, results, config);
 ```
@@ -21,8 +19,6 @@ plot_density_1d(x, psi, results, config);
 - Surface plot of final density
 - Cross-sectional plots
 - Optional animation
-````
-
 ```matlab
 plot_density_2d(x, y, psi, results, config);
 ```
@@ -32,24 +28,29 @@ plot_density_2d(x, y, psi, results, config);
 - Isosurface plots
 - Density slices
 - Cross-sections
-````
+- Multiple isosurface levels with transparency
 
-### 2. Animation (`animate_simulation.m`)
+### 2. Interactive Animation (`animate_simulation.m`)
 
-Creates dynamic visualizations of time evolution:
+Creates an interactive visualization dashboard with multiple synchronized plots:
 
 #### Features:
-- Dimension-specific animations (1D, 2D, 3D)
+- Interactive controls (Play/Pause, time slider)
+- Multi-panel display:
+  * Main density plot (1D/2D/3D)
+  * Cross-section view
+  * Condensate widths evolution
+  * Energy evolution
 - Video saving capability
 - Progress display
+- Automatic cleanup on close
 
 #### Usage:
-````
-
 ```matlab
 % Enable animation in config
 config.visualization.animate = true;
 config.visualization.save_video = true;  % Optional
+config.visualization.calculate_observables = true;  % For width/energy plots
 
 % Call animation
 animate_simulation(x, y, z, results, config);
@@ -64,89 +65,53 @@ Tracks condensate size over time:
 
 ## Configuration Options
 
-````
-
+```json
 {
     "visualization": {
-        "plot_density": true,      // Enable density plots
-        "plot_widths": true,       // Enable width evolution plots
-        "animate": true,           // Enable animation
-        "save_video": false,       // Save animation to file
-        "frame_rate": 20,          // Video frame rate
-        "colormap": "jet"          // Plot colormap
+        "plot_density": false,      // Enable separate density plots
+        "plot_widths": false,       // Enable separate width evolution plots
+        "animate": true,            // Enable interactive animation
+        "save_video": false,        // Save animation to file
+        "calculate_observables": true, // Calculate widths and energy
     }
 }
-````
+```
 
 ## Common Features
 
-1. **Automatic Dimensionality**:
-   - Adapts to 1D/2D/3D data
-   - Appropriate plot types
-   - Relevant cross-sections
-
-2. **Interactive Elements**:
+1. **Interactive Elements**:
+   - Play/Pause controls
+   - Time navigation slider
    - Rotatable 3D plots
-   - Adjustable view angles
-   - Colorbar scaling
+   - Synchronized multi-panel updates
+
+2. **Real-time Visualization**:
+   - Dynamic density evolution
+   - Live width tracking
+   - Energy monitoring
+   - Cross-section updates
 
 3. **Export Options**:
    - Video saving (.avi)
    - Figure export
    - Data extraction
 
-## Usage Examples
-
-### 1. Basic Density Plot
-````
-
-```matlab
-% 1D plot
-plot_density_1d(x, psi, results, config);
-
-% 2D plot
-plot_density_2d(x, y, psi, results, config);
-
-% 3D plot
-plot_density_3d(x, y, z, psi, results, config);
-```
-
-### 2. Animated Evolution
-````
-
-```matlab
-% Configure animation
-config.visualization.animate = true;
-config.visualization.save_video = true;
-
-% Run animation
-animate_simulation(x, y, z, results, config);
-```
-
-### 3. Width Analysis
-````
-
-```matlab
-% Plot width evolution
-plot_condensate_widths(results, config);
-```
-
 ## Performance Tips
 
 1. **Memory Management**:
-   - Use `drawnow` sparingly
-   - Clear figures in loops
-   - Manage video frame storage
+   - Efficient frame-by-frame video saving
+   - Proper cleanup of resources
+   - Automatic figure closure
 
 2. **Speed Optimization**:
-   - Adjust frame rates
-   - Control animation quality
-   - Use appropriate plot types
+   - Rate-limited display updates
+   - Efficient plot updates
+   - Optimized animation loop
 
 3. **Large Dataset Handling**:
-   - Downsample for animation
-   - Use efficient plot updates
-   - Clear unused variables
+   - On-the-fly video saving
+   - Memory-efficient plotting
+   - Resource cleanup
 
 ## Dependencies
 
@@ -161,3 +126,4 @@ Each visualization function includes:
 - Dimension checking
 - Missing data warnings
 - Graceful fallbacks
+- Proper cleanup on exit
