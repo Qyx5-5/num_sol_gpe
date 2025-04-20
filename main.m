@@ -1,60 +1,73 @@
-% Main script for running GPE simulations using the TSSP method.
+% Main script for running GPE simulations using the TSSP method (Simplified Structure).
 
 % Clear workspace and command window
 clc;
 clear;
 
 try
-    % Add paths to source code directories
-    addpath('src/core', 'src/utils', 'src/potentials', 'src/ground_state', 'src/visualizations');
-    
-    % Load configuration from JSON file
-    config = load_config('config/default_config.json');
-    
-    % Initialize grid, parameters, and wave function
-    [x, y, z, kx, ky, kz, dx, dy, dz, params] = initialize_grid(config);
-    psi = initialize_wavefunction(x, y, z, dx, dy, dz, config);
-    
-    % Get the potential function based on config
-    potential_func = str2func(config.potential.type);
-    V = potential_func(x, y, z, config.potential.parameters);
-    
-    % Run the simulation or calculate ground state
-    if strcmp(config.simulation.mode, 'evolution')
-        % Run time evolution using TSSP solver
-        [psi, results] = tssp_solver(psi, V, kx, ky, kz, dx, dy, dz, params, config, x, y, z);
-    elseif strcmp(config.simulation.mode, 'ground_state')
-        % Calculate ground state using specified method
-        [psi, results] = feval(str2func(config.ground_state.method), psi, V, kx, ky, kz, dx, dy, dz, params, config);
-        % results = {}; % You might want to store some results from ground state calculation
+    % Add path to source code directory
+    addpath('src');
+
+    % Get helper function handles
+    helpers = utils();
+
+    % Load configuration using helper
+    config = helpers.load_config('config/default_config.json');
+
+    % Initialize grid, parameters, and initial wave function
+    % Pass helpers struct to initialization
+    [x, y, z, kx, ky, kz, dx, dy, dz, params, psi0] = initialization(config, helpers);
+
+    % Calculate the potential (assumed time-independent based on this main script structure)
+    % The potentials function handles type selection internally.
+    V = potentials(x, y, z, config); % Pass t=0 implicitly by omitting the arg
+
+    % Select simulation mode
+    results = []; % Initialize results
+    psi_final = []; % Initialize final psi
+
+    if strcmpi(config.simulation.mode, 'evolution')
+        fprintf('Starting time evolution...\n');
+        % Pass helpers struct to solver
+        [psi_final, results] = tssp_solver(psi0, V, kx, ky, kz, dx, dy, dz, params, config, x, y, z, helpers);
+        fprintf('Time evolution finished.\n');
+
+    elseif strcmpi(config.simulation.mode, 'ground_state')
+        fprintf('Calculating ground state...\n');
+        % Pass helpers struct to ground state function
+        [psi_final, results] = ground_state(psi0, V, kx, ky, kz, dx, dy, dz, params, config, helpers);
+        % Note: results structure from ground_state might differ from evolution results
+        fprintf('Ground state calculation finished.\n');
+
+    else
+        error('Unknown simulation mode specified in config: %s', config.simulation.mode);
     end
-    
-    % Visualize results based on configuration
-    if config.visualization.plot_density
-        if config.simulation.dimension == 1
-            plot_density_1d(x, psi, results, config);
-        elseif config.simulation.dimension == 2
-            plot_density_2d(x, y, psi, results, config);
-        elseif config.simulation.dimension == 3
-            plot_density_3d(x, y, z, psi, results, config);
-        end
-    end
-    
-    if config.visualization.plot_widths
-        plot_condensate_widths(results, config);
-    end
-    
-    if config.visualization.animate
-        animate_simulation(x, y, z, results, config);
-    end
-    
-    % Remove paths to source code directories
-    rmpath('src/core', 'src/utils', 'src/potentials', 'src/ground_state', 'src/visualizations');
+
+    % Visualize results (pass final wave function and results struct)
+    fprintf('Visualizing results...\n');
+    visualizations(x, y, z, psi_final, results, config); % Use consolidated visualization
+    fprintf('Visualization finished.\n');
+
+    % Clean up path
+    rmpath('src');
 
 catch ME
-    fprintf('An error occurred:\n');
-    fprintf('%s\n', ME.message);
+    fprintf('\n--- An error occurred ---\n');
+    fprintf('Error message: %s\n', ME.message);
+    fprintf('Error identifier: %s\n', ME.identifier);
+    disp('Stack trace:');
     for i = 1:length(ME.stack)
-        fprintf('  In %s at line %d\n', ME.stack(i).name, ME.stack(i).line);
+        fprintf('  File: %s\n  Name: %s\n  Line: %d\n', ME.stack(i).file, ME.stack(i).name, ME.stack(i).line);
+        fprintf('------------------------\n');
     end
-end 
+    
+    % Clean up path even if error occurs
+    if exist('src', 'dir') % Check if src exists before trying to remove path
+         if contains(path, fullfile(pwd, 'src')) % Check if it's actually on the path
+            rmpath('src');
+            fprintf('Removed src from path after error.\n');
+         end
+    end
+end
+
+disp('Main script finished.'); 

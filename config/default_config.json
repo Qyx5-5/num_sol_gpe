@@ -1,6 +1,6 @@
 {
     "simulation": {
-        "dimension": 2,
+        "dimension": 1,
         "dt": 0.001,
         "T": 10,
         "Nt": 3000,

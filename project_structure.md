@@ -1,64 +1,46 @@
 ```
 gpe-tssp-project/
 ├── src/
-│   ├── core/
-│   │   ├── initialize_grid.m
-│   │   ├── initialize_wavefunction.m
-│   │   ├── apply_potential_step.m
-│   │   ├── apply_kinetic_step.m
-│   │   ├── tssp_step.m
-│   │   ��── tssp_solver.m
-│   ├── utils/
-│   │   ├── calculate_kappa_d.m
-│   │   ├── calculate_condensate_widths.m
-│   │   ├── normalize_wavefunction.m
-│   │   └── load_config.m
-│   ├── potentials/
-│   │   ├── harmonic.m
-│   │   ├── anharmonic.m
-│   │   ├── optical_lattice.m
-│   │   ├── double_well.m
-│   │   ├── rotating_trap.m
-│   │   ├── disordered.m
-│   │   └── box.m
-│   ├── ground_state/
-│   │   ├── imaginary_time_evolution.m
-│   │   └── direct_minimization.m
-│   ├── visualizations/
-│   │   ├── plot_density_1d.m
-│   │   ├── plot_density_2d.m
-│   │   ├── plot_density_3d.m
-│   │   ├── plot_condensate_widths.m
-│   │   └── animate_simulation.m
-│   └── tests/
-│       ├── test_initialization.m
-│       ├── test_potential_step.m
-│       ├── test_kinetic_step.m
-│       └── test_full_solver.m
+│   ├── initialization.m        # Grid, parameters, and initial wavefunction setup
+│   ├── potentials.m            # Potential function definitions and selection
+│   ├── tssp_solver.m           # Core TSSP time evolution solver
+│   ├── ground_state.m          # Ground state calculation methods
+│   ├── visualizations.m        # Plotting and animation functions
+│   └── utils.m                 # Utility functions (config loading, kappa_d, normalization, etc.)
 ├── config/
-│   └── default_config.json
-├── main.m
-├── README.md
-└── LICENSE
+│   └── default_config.json     # Simulation configuration file
+├── main.m                      # Main script to run simulations
+├── README.md                   # Project overview and usage guide
+├── algorithm.md                # Details of the TSSP algorithm
+├── potential.md                # Description of available potentials
+├── project_structure.md        # This file
+└── LICENSE                     # (Optional: Add a license file)
 ```
 
-**Changes and Explanations:**
+**Simplified Structure:**
 
-1. **Removed `examples/`:** Example scripts are now integrated into the `main.m` script, which uses the configuration file to set up different scenarios.
-2. **Added `visualizations/`:** This directory contains functions dedicated to visualizing the results.
-    *   **`plot_density_1d.m`**, **`plot_density_2d.m`**, **`plot_density_3d.m`:** Plot the density in 1D, 2D, and 3D, respectively.
-    *   **`plot_condensate_widths.m`:** Plots the evolution of condensate widths over time.
-    *   **`animate_simulation.m`:** Creates an animation of the simulation (optional, can be more complex to implement).
-3. **More Modular `src/core/`:**
-    *   **`initialize_grid.m`:** Sets up the spatial grid (x, y, z) and wave number arrays (kx, ky, kz).
-    *   **`initialize_wavefunction.m`:** Creates the initial wave function based on user configuration (e.g., Gaussian, Thomas-Fermi, custom).
-    *   **`apply_potential_step.m`:** Applies the potential evolution step of the TSSP algorithm.
-    *   **`apply_kinetic_step.m`:** Applies the kinetic evolution step.
-    *   **`tssp_step.m`:** Performs a single TSSP step (potential, kinetic, potential).
-    *   **`tssp_solver.m`:** The main solver function that runs the time evolution loop, calling `tssp_step` repeatedly.
-4. **`config/` and `default_config.json`:**
-    *   **`config/`:** This directory will hold configuration files.
-    *   **`default_config.json`:** A JSON file containing the default configuration parameters. This allows users to easily modify parameters without changing the code directly. Example `default_config.json`:
+All core MATLAB code is now located directly within the `src/` directory, reducing the number of subdirectories and files:
+
+*   **`initialization.m`**: Consolidates `initialize_grid.m` and `initialize_wavefunction.m`. Also includes necessary local helper functions (`calculate_kappa_d`, `normalize_wavefunction`).
+*   **`potentials.m`**: Consolidates all potential type functions (`harmonic.m`, `optical_lattice.m`, etc.) into one file with local functions for each type.
+*   **`tssp_solver.m`**: Consolidates the core TSSP steps (`apply_potential_step.m`, `apply_kinetic_step.m`, `tssp_step.m`) as local functions within the main solver.
+*   **`ground_state.m`**: Consolidates ground state calculation methods (`imaginary_time_evolution.m`, `direct_minimization.m`) and includes necessary local helper functions.
+*   **`visualizations.m`**: Consolidates all plotting functions (`plot_density_1d/2d/3d`, `plot_condensate_widths`) and the animation function (`animate_simulation.m`).
+*   **`utils.m`**: Consolidates utility functions (`load_config.m`, `calculate_kappa_d.m`, `calculate_condensate_widths.m`, `calculate_energy.m`, `normalize_wavefunction.m`). Note: some helpers were duplicated into `initialization.m` and `ground_state.m` as local functions to avoid dependency issues.
+
+**Benefits:**
+
+*   **Reduced File Count:** Significantly fewer `.m` files.
+*   **Simplified Navigation:** Easier to find relevant code as it's grouped into fewer, larger files based on core functionality.
+
+**Drawbacks:**
+
+*   **Larger Files:** Individual files are now larger, which might make them slightly harder to read through initially.
+*   **Code Duplication:** Some helper functions (like normalization, energy calculation) were duplicated as local functions in `initialization.m` and `ground_state.m` to maintain encapsulation within those files. This was done to avoid making `utils.m` functions globally accessible or requiring complex function handle passing.
+
+**Configuration:**
+
+The simulation is still configured through `config/default_config.json`. Example:
 
 ```json
 {
@@ -67,7 +49,8 @@ gpe-tssp-project/
         "dt": 0.001,
         "T": 10,
         "Nt": 10000,
-        "save_every": 100
+        "save_every": 100,
+        "mode": "evolution" // "evolution" or "ground_state"
     },
     "grid": {
         "Nx": 128,
@@ -84,44 +67,35 @@ gpe-tssp-project/
         "gamma_z": 1
     },
     "potential": {
-        "type": "harmonic",
-        "parameters": {}
+        "type": "harmonic", // e.g., harmonic, optical_lattice, double_well
+        "parameters": {} // Potential-specific parameters here
     },
     "initial_condition": {
-        "type": "gaussian",
+        "type": "gaussian", // e.g., gaussian, thomas_fermi
         "parameters": {
             "sigma_x": 1,
             "sigma_y": 1
         }
     },
     "ground_state": {
-        "method": "imaginary_time",
+        "method": "imaginary_time", // "imaginary_time" or "direct_minimization"
         "dt_imag": 0.01,
-        "tolerance": 1e-8
+        "tolerance": 1e-8,
+        "max_iter": 10000,
+        "minimization_step": 0.01 // Step size for direct_minimization
     },
     "visualization": {
         "plot_density": true,
         "plot_widths": true,
-        "animate": false
+        "animate": false,
+        "save_video": false,
+        "calculate_observables": true // Needed for plotting widths/energy
     }
 }
 ```
 
-1. **`utils/load_config.m`:** Loads the configuration from the JSON file and sets default values if parameters are not specified.
-2. **`main.m`:** The main script that:
-    *   Loads the configuration using `load_config.m`.
-    *   Calls functions from `src/core/` to initialize the simulation.
-    *   Calls `tssp_solver.m` to run the simulation.
-    *   Calls functions from `src/visualizations/` to generate plots or animations.
+**Running the Simulation:**
 
-
-**Benefits of this Structure:**
-
-*   **Modularity:** The code is broken down into smaller, well-defined functions, making it easier to understand, maintain, and extend.
-*   **Configurability:** Users can easily change simulation parameters, potentials, initial conditions, and visualization options by modifying the `default_config.json` file.
-*   **Testability:** The modular structure makes it easier to write unit tests for individual components of the code.
-*   **Readability:** The code is more organized and easier to follow.
-*   **Reusability:** Functions can be reused in different parts of the project or in other projects.
-
-This improved structure should provide a much more flexible and user-friendly framework for your GPE simulations. Remember to implement the functions in each of the `.m` files according to the algorithm and the configuration options.
+1.  Edit `config/default_config.json`.
+2.  Run `main.m` from the project root directory in MATLAB.
 
