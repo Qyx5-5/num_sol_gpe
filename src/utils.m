@@ -153,6 +153,9 @@ switch dimension
         error('Invalid dimension: %d', dimension);
 end
 
+% Ensure norm_val is scalar
+norm_val = norm_val(1);
+
 if norm_val <= 0 || isnan(norm_val) || isinf(norm_val)
    warning('Wavefunction norm is zero, negative, NaN or Inf (%.3e). Resetting normalization factor.', norm_val);
    norm_factor = 1;
@@ -281,15 +284,24 @@ switch dimension
     case 1
         kappa_d = kappa;
     case 2
-        if ~exist('gamma_y', 'var') || isempty(gamma_y) || gamma_y < 0
+        % Check if gamma_y exists and is valid (convert to scalar check)
+        if nargin < 4 || isempty(gamma_y) || any(gamma_y(:) < 0)
             error('gamma_y parameter needed and must be non-negative for 2D kappa_d calculation');
         end
+        % Ensure gamma_y is scalar
+        gamma_y = gamma_y(1);
         kappa_d = kappa * sqrt(gamma_y) / (2 * pi * epsilon);
     case 3
-        if ~exist('gamma_y', 'var') || isempty(gamma_y) || gamma_y < 0 || ...
-           ~exist('gamma_z', 'var') || isempty(gamma_z) || gamma_z < 0
-            error('gamma_y and gamma_z parameters needed and must be non-negative for 3D kappa_d calculation');
+        % Check if both gamma_y and gamma_z exist and are valid (convert to scalar checks)
+        if nargin < 4 || isempty(gamma_y) || any(gamma_y(:) < 0)
+            error('gamma_y parameter needed and must be non-negative for 3D kappa_d calculation');
         end
+        if nargin < 5 || isempty(gamma_z) || any(gamma_z(:) < 0)
+            error('gamma_z parameter needed and must be non-negative for 3D kappa_d calculation');
+        end
+        % Ensure gamma_y and gamma_z are scalars
+        gamma_y = gamma_y(1);
+        gamma_z = gamma_z(1);
         kappa_d = kappa * sqrt(gamma_y * gamma_z) / (4 * pi * epsilon^2);
     otherwise
         error('Invalid dimension: %d', dimension);

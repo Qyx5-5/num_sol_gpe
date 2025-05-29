@@ -1,32 +1,34 @@
 {
     "simulation": {
-        "dimension": 1,
+        "dimension": 2,
         "dt": 0.001,
-        "T": 5,
+        "T": 3,
         "Nt": 3000,
         "save_every": 100,
         "mode": "evolution"
     },
     "grid": {
-        "Nx": 256,
-        "Ny": 256,
+        "Nx": 64,
+        "Ny": 64,
         "Nz": 1,
-        "Lx": 10,
-        "Ly": 10,
+        "Lx": 8,
+        "Ly": 8,
         "Lz": 1
     },
     "parameters": {
         "epsilon": 0.01,
         "kappa": 1,
-        "gamma_y": 1,
+        "gamma_y": 1.5,
         "gamma_z": 1
     },
     "potential": {
         "type": "harmonic",
-        "parameters": {}
+        "parameters": {
+            "gamma_y": 1.5
+        }
     },
     "initial_condition": {
-        "type": "gaussian", 
+        "type": "gaussian",
         "parameters": {
             "sigma_x": 1,
             "sigma_y": 1
@@ -39,7 +41,7 @@
     },
     "visualization": {
         "plot_density": true,
-        "plot_widths": false,
+        "plot_widths": true,
         "animate": false,
         "save_video": false,
         "calculate_observables": true

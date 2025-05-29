@@ -22,6 +22,9 @@ if nargin < 5
     t = 0; % Default time if not provided
 end
 
+% Add dimension info to params for all potential functions
+params.dimension = config.simulation.dimension;
+
 switch lower(potential_type)
     case 'harmonic'
         V = harmonic_local(x, y, z, params);
@@ -54,32 +57,26 @@ function V = harmonic_local(x, y, z, params)
 % Harmonic potential (merged from harmonic.m and harmonic_trap.m).
 
 % Determine dimension based on input arrays
-dim = 1;
-if ~isempty(y)
-    dim = 2;
-end
-if ~isempty(z)
-    dim = 3;
-end
+dim = params.dimension;
 
-% Parameter validation (from harmonic_trap.m)
+% Parameter validation (from harmonic_trap.m) - only check for needed dimensions
 if dim > 1 && ~isfield(params, 'gamma_y')
     error('Missing parameter gamma_y for 2D/3D harmonic potential.');
 end
 if dim > 2 && ~isfield(params, 'gamma_z')
     error('Missing parameter gamma_z for 3D harmonic potential.');
 end
-if isfield(params, 'gamma_y') && params.gamma_y < 0
+if dim > 1 && isfield(params, 'gamma_y') && params.gamma_y < 0
     error('Invalid parameter: gamma_y must be non-negative.');
 end
-if isfield(params, 'gamma_z') && params.gamma_z < 0
+if dim > 2 && isfield(params, 'gamma_z') && params.gamma_z < 0
     error('Invalid parameter: gamma_z must be non-negative.');
 end
 
 % Calculate potential based on dimension
 if dim == 1 % 1D
     V = 0.5 * x.^2;
-elsif dim == 2 % 2D
+elseif dim == 2 % 2D
     gamma_y = params.gamma_y;
     [X, Y] = meshgrid(x, y);
     V = 0.5 * (X.^2 + gamma_y^2 * Y.^2);
@@ -99,13 +96,7 @@ kL = params.kL;
 include_harmonic = isfield(params, 'include_harmonic') && params.include_harmonic;
 
 % Determine dimension based on input arrays
-dim = 1;
-if ~isempty(y)
-    dim = 2;
-end
-if ~isempty(z)
-    dim = 3;
-end
+dim = params.dimension;
 
 if dim == 1 % 1D
     V = V0 * sin(kL * x).^2;
@@ -113,7 +104,7 @@ if dim == 1 % 1D
         % Add 1D harmonic potential (assuming base frequency 1)
         V = V + 0.5 * x.^2;
     end
-elsif dim == 2 % 2D
+elseif dim == 2 % 2D
     [X, Y] = meshgrid(x, y);
     V = V0 * (sin(kL * X).^2 + sin(kL * Y).^2);
     if include_harmonic
@@ -139,13 +130,7 @@ if ~isfield(params, 'method')
 end
 
 % Determine dimension based on input arrays
-dim = 1;
-if ~isempty(y)
-    dim = 2;
-end
-if ~isempty(z)
-    dim = 3;
-end
+dim = params.dimension;
 
 if dim == 1 % 1D
     if strcmpi(params.method, 'gaussian_barrier')
@@ -160,7 +145,7 @@ if dim == 1 % 1D
     else
         error('Invalid double-well method: %s', params.method);
     end
-elsif dim == 2 % 2D
+elseif dim == 2 % 2D
     gamma_y = params.gamma_y;
     [X, Y] = meshgrid(x, y);
     % Base harmonic potential
@@ -206,17 +191,11 @@ function V = anharmonic_local(x, y, z, params)
 lambda = params.lambda;
 
 % Determine dimension based on input arrays
-dim = 1;
-if ~isempty(y)
-    dim = 2;
-end
-if ~isempty(z)
-    dim = 3;
-end
+dim = params.dimension;
 
 if dim == 1 % 1D
     V = 0.5 * x.^2 + lambda * x.^4;
-elsif dim == 2 % 2D
+elseif dim == 2 % 2D
     gamma_y = params.gamma_y;
     [X, Y] = meshgrid(x, y);
     V = 0.5 * (X.^2 + gamma_y^2 * Y.^2) + lambda * (X.^4 + Y.^4);
@@ -273,15 +252,13 @@ V0 = params.V0;
 lc = params.correlation_length;
 include_harmonic = isfield(params, 'include_harmonic') && params.include_harmonic;
 
-% Determine dimension based on input arrays
-dim = 1;
+% Get dimension from params
+dim = params.dimension;
 Nx = length(x);
-if ~isempty(y)
-    dim = 2;
+if dim >= 2
     Ny = length(y);
 end
-if ~isempty(z)
-    dim = 3;
+if dim >= 3
     Nz = length(z);
 end
 
@@ -301,7 +278,7 @@ if dim == 1 % 1D
         V = V + 0.5 * x.^2;
     end
 
-elsif dim == 2 % 2D
+elseif dim == 2 % 2D
     [X, Y] = meshgrid(x, y);
     % Generate 2D random potential
     xi = randn(Ny, Nx);
@@ -362,13 +339,7 @@ if smoothing
 end
 
 % Determine dimension based on input arrays
-dim = 1;
-if ~isempty(y)
-    dim = 2;
-end
-if ~isempty(z)
-    dim = 3;
-end
+dim = params.dimension;
 
 if dim == 1 % 1D
     Lx = params.Lx;
@@ -380,7 +351,7 @@ if dim == 1 % 1D
         V(abs(x) >= Lx/2) = V0;
     end
 
-elsif dim == 2 % 2D
+elseif dim == 2 % 2D
     [X, Y] = meshgrid(x, y);
     Lx = params.Lx;
     Ly = params.Ly;

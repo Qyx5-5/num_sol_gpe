@@ -61,14 +61,8 @@ function psi = initialize_wavefunction_local(x, y, z, dx, dy, dz, config, params
 init_type = config.initial_condition.type;
 params_init = config.initial_condition.parameters; % Avoid collision with params output
 
-% Determine dimension based on input arrays
-dim = 1;
-if ~isempty(y)
-    dim = 2;
-end
-if ~isempty(z)
-    dim = 3;
-end
+% Use dimension from config instead of checking array emptiness
+dim = config.simulation.dimension;
 
 % Initialize wave function based on type
 switch lower(init_type)
