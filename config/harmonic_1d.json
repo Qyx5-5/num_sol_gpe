@@ -1,25 +1,26 @@
 {
+    "description": "1D Harmonic Trap - Standard configuration for one-dimensional BEC simulations",
     "simulation": {
         "dimension": 1,
         "dt": 0.001,
-        "T": 5,
-        "Nt": 5000,
-        "save_every": 50,
+        "T": 10.0,
+        "Nt": 10000,
+        "save_every": 100,
         "mode": "evolution"
     },
     "grid": {
-        "Nx": 128,
+        "Nx": 256,
         "Ny": 1,
         "Nz": 1,
-        "Lx": 10,
-        "Ly": 1,
-        "Lz": 1
+        "Lx": 15.0,
+        "Ly": 1.0,
+        "Lz": 1.0
     },
     "parameters": {
         "epsilon": 0.01,
-        "kappa": 1,
-        "gamma_y": 1,
-        "gamma_z": 1
+        "kappa": 1.0,
+        "gamma_y": 1.0,
+        "gamma_z": 1.0
     },
     "potential": {
         "type": "harmonic",
@@ -28,19 +29,21 @@
     "initial_condition": {
         "type": "gaussian",
         "parameters": {
-            "sigma_x": 1
+            "sigma_x": 1.0
         }
     },
     "ground_state": {
         "method": "imaginary_time",
         "dt_imag": 0.01,
-        "tolerance": 1e-8
+        "tolerance": 1e-8,
+        "max_iter": 10000
     },
     "visualization": {
         "plot_density": true,
         "plot_widths": true,
-        "animate": false,
+        "animate": true,
         "save_video": false,
-        "calculate_observables": true
+        "calculate_observables": true,
+        "frame_rate": 30
     }
 } 

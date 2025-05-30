@@ -91,16 +91,47 @@ switch lower(init_type)
         end
 
     case 'thomas_fermi'
-        % Thomas-Fermi initial condition (approximation)
-        warning('Thomas-Fermi requires potential V, implementing basic version. Ensure potential exists and is passed if needed elsewhere.');
-        V_tf = 0; % Simplified placeholder - requires potential V for real use
-        mu = 0.5; % Placeholder chemical potential - should be determined properly
-        kappa_d = params.kappa_d; % Use kappa_d from passed params struct
+        % Thomas-Fermi approximation for harmonic trap
+        kappa_d = params.kappa_d;
+        gamma_y = params.gamma_y;
+        gamma_z = params.gamma_z;
         
-        psi_squared = (mu - V_tf) / kappa_d;
-        psi_squared(psi_squared < 0) = 0; % Density must be non-negative
-        psi = sqrt(psi_squared);
+        % Calculate chemical potential based on dimension
+        if dim == 1
+            % 1D case
+            mu = (3 * kappa_d / 4)^(2/3);
+            V_trap = 0.5 * x.^2;
+            
+            % Thomas-Fermi density
+            psi_squared = (mu - V_trap) / kappa_d;
+            psi_squared(psi_squared < 0) = 0;
+            psi = sqrt(psi_squared);
+            
+        elseif dim == 2
+            % 2D case
+            mu = sqrt(kappa_d * gamma_y / pi);
+            [X, Y] = meshgrid(x, y);
+            V_trap = 0.5 * (X.^2 + gamma_y^2 * Y.^2);
+            
+            % Thomas-Fermi density
+            psi_squared = (mu - V_trap) / kappa_d;
+            psi_squared(psi_squared < 0) = 0;
+            psi = sqrt(psi_squared);
+            
+        else % dim == 3
+            % 3D case
+            mu = (15 * kappa_d * sqrt(gamma_y * gamma_z) / (4 * pi))^(2/5);
+            [X, Y, Z] = meshgrid(x, y, z);
+            V_trap = 0.5 * (X.^2 + gamma_y^2 * Y.^2 + gamma_z^2 * Z.^2);
+            
+            % Thomas-Fermi density
+            psi_squared = (mu - V_trap) / kappa_d;
+            psi_squared(psi_squared < 0) = 0;
+            psi = sqrt(psi_squared);
+        end
         
+        % Note: The wavefunction will be normalized later by the normalize_wavefunction call
+
     case 'custom'
         % Custom initial condition
         error('Custom initial condition not implemented yet.');

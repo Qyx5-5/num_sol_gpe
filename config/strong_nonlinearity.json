@@ -1,43 +1,42 @@
 {
-    "description": "Default Configuration - General purpose starting configuration for GPE simulations",
+    "description": "Strong Nonlinearity - Configuration for studying Thomas-Fermi regime with strong interactions",
     "simulation": {
         "dimension": 2,
-        "dt": 0.001,
-        "T": 8.0,
-        "Nt": 8000,
-        "save_every": 100,
+        "dt": 0.0002,
+        "T": 5.0,
+        "Nt": 25000,
+        "save_every": 250,
         "mode": "evolution"
     },
     "grid": {
         "Nx": 128,
         "Ny": 128,
         "Nz": 1,
-        "Lx": 12.0,
-        "Ly": 12.0,
+        "Lx": 10.0,
+        "Ly": 10.0,
         "Lz": 1.0
     },
     "parameters": {
-        "epsilon": 0.01,
-        "kappa": 1.0,
-        "gamma_y": 1.0,
+        "epsilon": 0.005,
+        "kappa": 10.0,
+        "gamma_y": 1.2,
         "gamma_z": 1.0
     },
     "potential": {
         "type": "harmonic",
-        "parameters": {}
+        "parameters": {
+            "gamma_y": 1.2
+        }
     },
     "initial_condition": {
-        "type": "gaussian", 
-        "parameters": {
-            "sigma_x": 1.0,
-            "sigma_y": 1.0
-        }
+        "type": "thomas_fermi",
+        "parameters": {}
     },
     "ground_state": {
         "method": "imaginary_time",
-        "dt_imag": 0.01,
+        "dt_imag": 0.002,
         "tolerance": 1e-8,
-        "max_iter": 10000
+        "max_iter": 20000
     },
     "visualization": {
         "plot_density": true,
@@ -45,6 +44,6 @@
         "animate": true,
         "save_video": false,
         "calculate_observables": true,
-        "frame_rate": 25
+        "frame_rate": 20
     }
 } 

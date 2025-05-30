@@ -1,41 +1,47 @@
 {
-    "description": "Default Configuration - General purpose starting configuration for GPE simulations",
+    "description": "2D Optical Lattice - Configuration for studying BEC dynamics in two-dimensional periodic potentials",
     "simulation": {
         "dimension": 2,
-        "dt": 0.001,
-        "T": 8.0,
-        "Nt": 8000,
-        "save_every": 100,
+        "dt": 0.0005,
+        "T": 6.0,
+        "Nt": 12000,
+        "save_every": 120,
         "mode": "evolution"
     },
     "grid": {
         "Nx": 128,
         "Ny": 128,
         "Nz": 1,
-        "Lx": 12.0,
-        "Ly": 12.0,
+        "Lx": 16.0,
+        "Ly": 16.0,
         "Lz": 1.0
     },
     "parameters": {
         "epsilon": 0.01,
-        "kappa": 1.0,
+        "kappa": 0.8,
         "gamma_y": 1.0,
         "gamma_z": 1.0
     },
     "potential": {
-        "type": "harmonic",
-        "parameters": {}
+        "type": "optical_lattice",
+        "parameters": {
+            "V0": 4.0,
+            "kL": 1.0,
+            "use_harmonic": true,
+            "gamma_y": 1.0,
+            "gamma_z": 1.0
+        }
     },
     "initial_condition": {
-        "type": "gaussian", 
+        "type": "gaussian",
         "parameters": {
-            "sigma_x": 1.0,
-            "sigma_y": 1.0
+            "sigma_x": 1.5,
+            "sigma_y": 1.5
         }
     },
     "ground_state": {
         "method": "imaginary_time",
-        "dt_imag": 0.01,
+        "dt_imag": 0.005,
         "tolerance": 1e-8,
         "max_iter": 10000
     },

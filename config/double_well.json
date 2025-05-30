@@ -1,0 +1,53 @@
+{
+    "description": "Double Well Potential - Configuration for studying tunneling dynamics and Josephson oscillations",
+    "simulation": {
+        "dimension": 1,
+        "dt": 0.0005,
+        "T": 12.0,
+        "Nt": 24000,
+        "save_every": 240,
+        "mode": "evolution"
+    },
+    "grid": {
+        "Nx": 256,
+        "Ny": 1,
+        "Nz": 1,
+        "Lx": 18.0,
+        "Ly": 1.0,
+        "Lz": 1.0
+    },
+    "parameters": {
+        "epsilon": 0.01,
+        "kappa": 0.5,
+        "gamma_y": 1.0,
+        "gamma_z": 1.0
+    },
+    "potential": {
+        "type": "double_well",
+        "parameters": {
+            "barrier_height": 2.0,
+            "barrier_width": 0.8,
+            "well_separation": 3.0
+        }
+    },
+    "initial_condition": {
+        "type": "gaussian",
+        "parameters": {
+            "sigma_x": 0.8
+        }
+    },
+    "ground_state": {
+        "method": "imaginary_time",
+        "dt_imag": 0.005,
+        "tolerance": 1e-8,
+        "max_iter": 12000
+    },
+    "visualization": {
+        "plot_density": true,
+        "plot_widths": true,
+        "animate": true,
+        "save_video": false,
+        "calculate_observables": true,
+        "frame_rate": 30
+    }
+} 

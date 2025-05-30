@@ -1,43 +1,47 @@
 {
-    "description": "Default Configuration - General purpose starting configuration for GPE simulations",
+    "description": "3D Harmonic Trap - Standard configuration for three-dimensional BEC simulations with fully anisotropic trapping",
     "simulation": {
-        "dimension": 2,
+        "dimension": 3,
         "dt": 0.001,
-        "T": 8.0,
-        "Nt": 8000,
-        "save_every": 100,
+        "T": 6.0,
+        "Nt": 6000,
+        "save_every": 120,
         "mode": "evolution"
     },
     "grid": {
-        "Nx": 128,
-        "Ny": 128,
-        "Nz": 1,
-        "Lx": 12.0,
-        "Ly": 12.0,
-        "Lz": 1.0
+        "Nx": 64,
+        "Ny": 64,
+        "Nz": 64,
+        "Lx": 10.0,
+        "Ly": 10.0,
+        "Lz": 10.0
     },
     "parameters": {
         "epsilon": 0.01,
         "kappa": 1.0,
-        "gamma_y": 1.0,
-        "gamma_z": 1.0
+        "gamma_y": 1.2,
+        "gamma_z": 0.8
     },
     "potential": {
         "type": "harmonic",
-        "parameters": {}
+        "parameters": {
+            "gamma_y": 1.2,
+            "gamma_z": 0.8
+        }
     },
     "initial_condition": {
-        "type": "gaussian", 
+        "type": "gaussian",
         "parameters": {
             "sigma_x": 1.0,
-            "sigma_y": 1.0
+            "sigma_y": 0.9,
+            "sigma_z": 1.1
         }
     },
     "ground_state": {
         "method": "imaginary_time",
         "dt_imag": 0.01,
         "tolerance": 1e-8,
-        "max_iter": 10000
+        "max_iter": 6000
     },
     "visualization": {
         "plot_density": true,
@@ -45,6 +49,6 @@
         "animate": true,
         "save_video": false,
         "calculate_observables": true,
-        "frame_rate": 25
+        "frame_rate": 20
     }
 } 

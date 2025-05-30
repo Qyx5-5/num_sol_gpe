@@ -25,6 +25,15 @@ end
 % Add dimension info to params for all potential functions
 params.dimension = config.simulation.dimension;
 
+% Add global parameters that are needed by potential functions
+% (gamma_y and gamma_z are stored in config.parameters, not config.potential.parameters)
+if isfield(config.parameters, 'gamma_y')
+    params.gamma_y = config.parameters.gamma_y;
+end
+if isfield(config.parameters, 'gamma_z')
+    params.gamma_z = config.parameters.gamma_z;
+end
+
 switch lower(potential_type)
     case 'harmonic'
         V = harmonic_local(x, y, z, params);
